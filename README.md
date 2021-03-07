@@ -135,7 +135,7 @@ output                   kafka-epoch   12           1                    True
 
 # Eoch Producer and Converter
 
-deploy two kafka [consumer](https://github.com/parsa97/epochConvertor) and one [producer](https://github.com/parsa97/epochProducer) in kafka namespace.
+deploy two kafka [consumer](https://github.com/parsa97/epochConverter) and one [producer](https://github.com/parsa97/epochProducer) in kafka namespace.
 
 pods are put in **CrashloopBackOff** state until there is a Kafka cluster get reachable.
 ```
@@ -154,7 +154,9 @@ Ansible contains groups as per below.
 | `all` | tasks which must run on all nodes | docker, kube
 | `master` | initialize new cluster | master
 | `worker` | all workers must join this group | join
-| `kubeapi` | for extra tasks which should always use kubectl we need to define kubemaster as the API node in Vagrantfile we will use this if we need multi-master cluster | Kafka, epoch 
+| `kubeapi` | for extra tasks which should always use kubectl we need to define kubemaster as the API node in Vagrantfile we will use this if we need multi-master cluster | kafka, epoch 
+
+***Note:*** Ansible are note ready for multi master cluster.
 
 # Extra
 
