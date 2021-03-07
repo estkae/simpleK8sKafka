@@ -1,0 +1,26 @@
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: input
+  labels:
+    strimzi.io/cluster: kafka-epoch
+spec:
+  partitions: 12
+  replicas: 1
+  config:
+    retention.ms: 7200
+    segment.bytes: 409600
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: output
+  labels:
+    strimzi.io/cluster: kafka-epoch
+spec:
+  partitions: 12
+  replicas: 1
+  config:
+    retention.ms: 7200
+    segment.bytes: 409600

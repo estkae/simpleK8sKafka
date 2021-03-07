@@ -1,0 +1,90 @@
+---
+- name: Init cluster | Check if kubeadm has already run
+  stat:
+    path: "/var/lib/kubelet/config.yaml"
+  register: kubeadm_already_run
+  run_once: yes
+
+- block:
+  - name: Initialise Master node
+    command: kubeadm init --apiserver-advertise-address=192.168.99.20 --pod-network-cidr=192.168.0.0/16
+  when:
+  - not kubeadm_already_run.stat.exists
+  run_once: yes
+
+- name: Create .kube directory
+  become: no
+  file:
+    path: /home/vagrant/.kube
+    state: directory
+    owner: vagrant
+    group: vagrant
+  register: kube_dir
+
+- name: Copy kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: '{{ kube_dir.path }}/config'
+    remote_src: yes
+    owner: vagrant
+    group: vagrant
+
+- name: Copy calico manifest to master
+  copy:
+    src: calico.yml
+    dest: /home/vagrant/calico.yml
+
+- name: Deploy pod network to the cluster
+  become: no
+  command: kubectl apply -f /home/vagrant/calico.yml
+
+- name: ALlow pods to schedule on master
+  become: no
+  command: kubectl taint nodes --all node-role.kubernetes.io/master-
+  ignore_errors: yes
+
+- name: Generate join command
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+- name: Copy join command to local file
+  local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+
+- name: Clone Prometheus repo
+  ansible.builtin.git:
+    repo: https://github.com/parsa97/kube-prometheus.git
+    dest: /home/vagrant/kube-prometheus
+
+- name: Deploy Prometheus Operator prepare
+  become: no
+  command: kubectl apply -f /home/vagrant/kube-prometheus/manifests/setup
+
+- name: Deploy Prometheus Operator Wait
+  wait_for:
+    timeout: 10
+ 
+- name: Deploy Prometheus Operator main
+  become: no
+  command: kubectl apply -f /home/vagrant/kube-prometheus/manifests
+
+- name: Create .kafkactl directory
+  become: no
+  file:
+    path: /home/vagrant/.config/kafkactl
+    state: directory
+    owner: vagrant
+    group: vagrant
+  register: kafkactl_dir
+
+- name: Copy kafkactl config
+  copy:
+    src: kafkactl-config.yml
+    dest: '{{ kafkactl_dir.path }}/config.yml'
+    owner: vagrant
+    group: vagrant
+
+- name: Copy kafkactl binary to master
+  copy:
+    src: kafkactl
+    dest: /usr/local/bin
+    mode: 0744

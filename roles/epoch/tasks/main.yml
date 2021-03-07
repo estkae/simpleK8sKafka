@@ -1,0 +1,57 @@
+---
+### Prepare Kafka Topics
+- name: Copy kafka topic yaml
+  copy:
+    src: kafka-topic.yaml
+    dest: /home/vagrant/kafka-topic.yaml
+
+- name: Deploy kafka Topics
+  become: no
+  command: kubectl apply -f kafka-topic.yaml -n kafka
+
+- name: Wait for kafka topic
+  command: kubectl get kafkatopic input -n kafka
+  register: topics
+  until:
+    - '"input"  in topics.stdout'
+  retries: 10
+  delay: 2
+
+### Deploy producer and consumer
+- name: Copy epoch Producer 
+  copy: 
+    src: deployment-epoch-producer.yaml 
+    dest: /home/vagrant/deployment-epoch-producer.yaml 
+ 
+- name: Deploy epoch Producer 
+  become: no 
+  command: kubectl apply -f deployment-epoch-producer.yaml -n kafka 
+ 
+- name: Copy epoch converter 
+  copy: 
+    src: deployment-epoch-converter.yaml 
+    dest: /home/vagrant/deployment-epoch-converter.yaml 
+ 
+- name: Deploy epoch converter 
+  become: no 
+  command: kubectl apply -f deployment-epoch-converter.yaml -n kafka
+
+### Allow prometheus to discover this namespace
+- name: Copy prometheus-roleBinding.yaml
+  copy:
+    src: prometheus-roleBinding.yaml
+    dest: /home/vagrant/prometheus-roleBinding.yaml
+
+- name: Deploy serviceMonitor
+  become: no
+  command: kubectl apply -f prometheus-roleBinding.yaml -n kafka
+
+### add serviceMonitor
+- name: Copy serviceMonitor
+  copy:
+    src: serviceMonitor.yaml
+    dest: /home/vagrant/serviceMonitor.yaml
+
+- name: Deploy serviceMonitor
+  become: no
+  command: kubectl apply -f serviceMonitor.yaml -n kafka

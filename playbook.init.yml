@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: yes
+  roles:
+    - docker
+    - kube
+
+- hosts: master
+  become: yes
+  roles:
+    - master
+
+- hosts: worker
+  become: yes
+  roles:
+    - join
+
+- hosts: kubeapi
+  become: no
+  roles:
+    - kafka
+    - epoch

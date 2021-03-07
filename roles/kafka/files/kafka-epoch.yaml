@@ -1,0 +1,88 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  name: kafka-epoch
+spec:
+  kafka:
+    version: 2.7.0
+    replicas: 3
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+        networkPolicyPeers:
+        - podSelector:
+            matchLabels:
+              k8s-app: epoch-converter
+        - podSelector:
+            matchLabels:
+              k8s-app: epoch-producer
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    config:
+      auto.create.topics.enable: false
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      log.message.format.version: "2.7"
+      inter.broker.protocol.version: "2.7"
+    storage:
+      type: ephemeral
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics-config.yml
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: "strimzi.io/name"
+                  operator: In
+                  values:
+                  - "kafka-epoch-kafka"
+            topologyKey: "kubernetes.io/hostname"
+  zookeeper:
+    replicas: 2
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    storage:
+      type: ephemeral
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: zookeeper-metrics-config.yml
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: "strimzi.io/name"
+                  operator: In
+                  values:
+                  - "kafka-epoch-zookeeper"
+            topologyKey: "kubernetes.io/hostname"
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+  kafkaExporter:
+    topicRegex: ".*"
+    groupRegex: ".*"
+

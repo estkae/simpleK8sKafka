@@ -1,0 +1,27 @@
+contexts:
+  default:
+    brokers:
+    - kafka-epoch-kafka-bootstrap:9093
+    kubernetes:
+      enabled: true
+      binary: kubectl
+      kubeConfig: /home/vagrant/.kube/config
+      kubeContext: kubernetes-admin@kubernetes
+      namespace: kafka
+    tls:
+      insecure: true
+      enabled: true
+      
+    # optional: clientID config (defaults to kafkactl-{username})
+    clientID: kafkactl-client
+
+    # optional: kafkaVersion (defaults to 2.0.0)
+    kafkaVersion: 2.7.0
+
+    # optional: timeout for admin requests (defaults to 3s)
+    requestTimeout: 10s
+
+    # optional: changes the default partitioner
+    defaultPartitioner: "hash"
+
+current-context: default

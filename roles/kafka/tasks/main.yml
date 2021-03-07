@@ -1,0 +1,76 @@
+---
+### Deploy Strimzi 
+- name: Copy Strimzi Kafka Operato
+  copy:
+    src: strimzi-kafka-operator.yaml
+    dest: /home/vagrant/strimzi-kafka-operator.yaml
+
+- name: Deploy Strimzi Kafka Operator
+  become: no
+  command: kubectl apply -f /home/vagrant/strimzi-kafka-operator.yaml -n kafka
+
+- name: Wait for operator get ready
+  command: kubectl get pods -n kafka
+  register: pods
+  until:      
+    - '"strimzi-cluster-operator"  in pods.stdout'      
+  retries: 10
+  delay: 2
+
+- name: Copy Kafka metrics
+  copy:
+    src: kafka-metrics.yaml
+    dest: /home/vagrant/kafka-metrics.yaml
+
+- name: Deploy Kafka metrics
+  become: no
+  command: kubectl apply -f kafka-metrics.yaml -n kafka
+
+### Kafka Epoch cluster
+- name: Copy Kafka epoch cluster manifest
+  copy:
+    src: kafka-epoch.yaml
+    dest: /home/vagrant/kafka-epoch.yaml
+
+- name: Deploy Kafka epoch cluster
+  become: no
+  command: kubectl apply -f kafka-epoch.yaml -n kafka 
+
+### Strimzi Monitoring
+- name: Copy strimzi pod monitor
+  copy:
+    src: strimzi-pod-monitor.yaml
+    dest: /home/vagrant/strimzi-pod-monitor.yaml
+
+- name: Deploy strimzi pod monitor
+  become: no
+  command: kubectl apply -f /home/vagrant/strimzi-pod-monitor.yaml -n monitoring 
+
+- name: Copy prometheus additional scrape file
+  copy:
+    src: prometheus-additional.yaml
+    dest: /home/vagrant/prometheus-additional.yaml 
+
+- name: Deploy prometheus additional scrape file
+  become: no
+  command: kubectl apply -f /home/vagrant/prometheus-additional.yaml -n monitoring
+
+- name: Copy kafka prometheus-rule file
+  copy:
+    src: prometheus-rules.yaml
+    dest: /home/vagrant/prometheus-rules.yaml
+
+- name: Deploy kafka prometheus-rules 
+  become: no
+  command: kubectl apply -f /home/vagrant/prometheus-rules.yaml -n monitoring
+
+- name: Copy prometheus installation file
+  copy:
+    src: prometheus.yaml
+    dest: /home/vagrant/prometheus.yaml
+
+- name: Deploy kafka prometheus
+  become: no
+  command: kubectl apply -f /home/vagrant/prometheus.yaml -n monitoring
+
+
