@@ -59,7 +59,7 @@ All default K8s dashboards are deployed and Extra dashboards are listed below:
 - Strmizi Zookeeper
 - Epoch Producer and Convertor
 
-![Screenshot](Epochdashboard.png)
+![Screenshot](epochdashboard.png)
 
 ***Monitoring Pods:***
 
@@ -161,7 +161,7 @@ Ansible contains groups as per below.
 There is [kafkactl](https://github.com/deviceinsight/kafkactl) in kubemaster node which connect to kafka cluster.
 
 ## Get topics:
-#
+
 ```
 vagrant@kubemaster:~$ kafkactl get topics
 TOPIC                  PARTITIONS
@@ -169,14 +169,14 @@ input                  12
 output                 12
 ```
 ## Get consumer-groups:
-#
+
 ```
 vagrant@kubemaster:~$ kafkactl get consumer-groups
 CONSUMER_GROUP     TOPICS
 epochConsumer      input
 ```
 ## Describe Consumer-group:
-#
+
 ```
 vagrant@kubemaster:~$ kafkactl describe consumer-group epochConsumer
 TOPIC     PARTITION     NEWEST_OFFSET     OLDEST_OFFSET     CONSUMER_OFFSET     LEAD     LAG
@@ -199,7 +199,7 @@ CLIENT_HOST         CLIENT_ID     TOPIC     ASSIGNED_PARTITIONS
 ```
 
 ## Consume from kafka **output:**
-#
+
 ```
 vagrant@kubemaster:~$ kafkactl consume output
 2021-03-07T00:17:21.327Z
