@@ -87,4 +87,4 @@
   copy:
     src: kafkactl
     dest: /usr/local/bin
-    mode: 0744
+    mode: 0777
