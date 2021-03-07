@@ -1,13 +1,4 @@
 ---
-- name: Copy insert proxy
-  copy:
-    src: provision.sh
-    dest: /tmp/provision.sh
-    mode: 0777
-
-- name: Run insert proxy
-  command: sh /tmp/provision.sh
-
 - name: Install prerequisites
   apt:
     name: apt-transport-https
