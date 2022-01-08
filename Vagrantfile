@@ -3,9 +3,9 @@
 WORKERS_COUNT = "2"
 
 cluster = {
-  "kubemaster" => { :ip => "192.168.99.20", :cpus => 6, :mem => 8192, :role => "master"},
-  "worker1" => { :ip => "192.168.99.21", :cpus => 6, :mem => 8192, :role => "worker" },
-  "worker2" => { :ip => "192.168.99.22", :cpus => 6, :mem => 8192, :role => "worker"}
+  "kubemaster" => { :ip => "192.168.56.20", :cpus => 2, :mem => 4096, :role => "master"},
+  "worker1" => { :ip => "192.168.56.21", :cpus => 2, :mem => 2048, :role => "worker" },
+  "worker2" => { :ip => "192.168.56.22", :cpus => 2, :mem => 2048, :role => "worker"}
 }
 
 roles = {}

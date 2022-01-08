@@ -6,7 +6,7 @@
 
 - name: Install docker
   apt:
-    name: docker.io=19.03.8-0ubuntu1.20.04.1
+    name: docker.io
     update_cache: yes
 
 - name: Create the docker group

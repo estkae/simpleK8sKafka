@@ -7,7 +7,7 @@
 
 - block:
   - name: Initialise Master node
-    command: kubeadm init --apiserver-advertise-address=192.168.99.20 --pod-network-cidr=192.168.0.0/16
+    command: kubeadm init --apiserver-advertise-address=192.168.56.20 --pod-network-cidr=192.168.0.0/16
   when:
   - not kubeadm_already_run.stat.exists
   run_once: yes
@@ -63,7 +63,7 @@
 - name: Deploy Prometheus Operator Wait
   wait_for:
     timeout: 10
- 
+
 - name: Deploy Prometheus Operator main
   become: no
   command: kubectl apply -f /home/vagrant/kube-prometheus/manifests
